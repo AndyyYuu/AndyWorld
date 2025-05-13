@@ -1,0 +1,876 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Andy's world</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #000;
+            color: #0fe;
+            font-family: 'Courier New', monospace;
+            overflow-x: hidden;
+            height: 300vh; /* 使页面可滚动 */
+        }
+
+        canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        .content {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            width: 100%;
+            gap: 2vh;
+        }
+
+        .title {
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 0.5vw;
+            cursor: default;
+            position: relative;
+            text-shadow: 0 0 10px #0fe, 0 0 20px #0fe;
+            transition: all 0.3s ease;
+        }
+
+        #mainTitle {
+            font-size: 5vw;
+            font-weight: bold;
+        }
+
+        #subTitle {
+            font-size: 2vw;
+            font-weight: normal;
+        }
+
+        .title span {
+            display: inline-block;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .title a {
+            color: #0fe;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .title a:hover {
+            color: #fff;
+            text-shadow: 0 0 15px #fff, 0 0 25px #fff;
+        }
+
+        .title a.andy-link {
+            color: #b19cd9;  /* 特殊的紫色 */
+            text-shadow: 0 0 10px #b19cd9, 0 0 20px #b19cd9;
+        }
+
+        .title a.andy-link:hover {
+            color: #d4b5ff;  /* 悬停时更亮的紫色 */
+            text-shadow: 0 0 15px #d4b5ff, 0 0 25px #d4b5ff;
+        }
+
+        .glitch-effect {
+            animation: glitch 0.3s infinite;
+            text-shadow: 0 0 15px #0fe, 0 0 25px #0fe, 0 0 35px #0fe;
+        }
+
+        @keyframes glitch {
+            0% {
+                transform: translate(0);
+                text-shadow: 0 0 15px #0fe, 0 0 25px #0fe;
+            }
+            20% {
+                transform: translate(-2px, 2px);
+                text-shadow: 0 0 15px #f0e, 0 0 25px #f0e;
+            }
+            40% {
+                transform: translate(-2px, -2px);
+                text-shadow: 0 0 15px #0ef, 0 0 25px #0ef;
+            }
+            60% {
+                transform: translate(2px, 2px);
+                text-shadow: 0 0 15px #ff0, 0 0 25px #ff0;
+            }
+            80% {
+                transform: translate(2px, -2px);
+                text-shadow: 0 0 15px #f00, 0 0 25px #f00;
+            }
+            100% {
+                transform: translate(0);
+                text-shadow: 0 0 15px #0fe, 0 0 25px #0fe;
+            }
+        }
+
+        .scroll-indicator {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #0fe;
+            font-size: 14px;
+            opacity: 0.7;
+            animation: pulse 2s infinite;
+            z-index: 2;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 0.3; }
+            50% { opacity: 0.9; }
+            100% { opacity: 0.3; }
+        }
+
+        .section {
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            z-index: 2;
+        }
+
+        .section-content {
+            max-width: 800px;
+            padding: 20px;
+            background-color: rgba(0, 0, 0, 0.7);
+            border: 1px solid #0fe;
+            border-radius: 5px;
+            box-shadow: 0 0 15px #0fe;
+            margin-bottom: 50px;  /* 添加底部间距 */
+        }
+
+        .section-title {
+            font-size: 2rem;
+            margin-bottom: 20px;
+            color: #0fe;
+            text-shadow: 0 0 5px #0fe;
+        }
+
+        .card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+            padding: 20px;
+        }
+
+        .photo-container {
+            width: 350px;
+            height: 600px;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 2px solid #0fe;
+            box-shadow: 0 0 15px #0fe;
+            transition: all 0.3s ease;
+        }
+
+        .photo-container:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 25px #0fe;
+        }
+
+        .photo-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: all 0.3s ease;
+        }
+
+        .photo-container:hover img {
+            transform: scale(1.1);
+        }
+
+        .section-text {
+            font-size: 1.2rem;
+            line-height: 1.6;
+            color: #0fe;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .matrix-rain {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            opacity: 0.2;
+        }
+
+        .image-container {
+            position: fixed;
+            width: 305px;
+            height: 300px;
+            z-index: 2;
+            cursor: pointer;
+            top: 380px;
+            left: 20px;
+        }
+
+        .image-container img {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: opacity 0.5s ease;
+            opacity: 0;
+            visibility: hidden;
+            border-radius: 10px;
+            border: 2px solid #0fe;
+            box-shadow: 0 0 15px #0fe;
+        }
+
+        .image-container img.active {
+            opacity: 1;
+            visibility: visible;
+            animation: float 3s infinite ease-in-out;
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-20px);
+            }
+        }
+
+        #vortexCanvas {
+            position: relative;
+            width: 300px;  /* 减小画布大小 */
+            height: 300px;
+            z-index: 2;
+            margin: 0 auto;
+            background: transparent;
+            position: absolute;
+            bottom: 50px;  /* 调整底部距离 */
+            left: 50%;
+            transform: translateX(-50%);
+            cursor: pointer;  /* 添加指针样式 */
+        }
+
+        .vortex-center-image {
+            position: absolute;
+            width: 100px;  /* 设置合适的图片大小 */
+            height: 100px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 3;
+            pointer-events: none;  /* 确保图片不会干扰鼠标事件 */
+        }
+
+        .vortex-center-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .vortex-particle {
+            position: absolute;
+            background: #0fe;
+            border-radius: 50%;
+            pointer-events: none;
+            opacity: 0.6;
+            box-shadow: 0 0 10px #0fe;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="matrixRain" class="matrix-rain"></canvas>
+    <canvas id="magneticField"></canvas>
+    
+    <div class="image-container" id="imageCarousel">
+        <img src="images/image1.png" class="active" alt="Image 1">
+        <img src="images/image2.png" alt="Image 2">
+        <img src="images/image3.png" alt="Image 3">
+        <img src="images/image4.png" alt="Image 4">
+        <img src="images/image5.png" alt="Image 5">
+    </div>
+
+    <div class="content">
+        <h1 class="title" id="mainTitle">Welcome to <a href="https://andyyyuu.github.io/AndyMain/" target="_blank" class="andy-link">ANDY</a>'s World</h1>
+        <p class="title" id="subTitle">Code. Create. Conquer.</p>
+    </div>
+
+    <div class="section">
+        <div class="section-content">
+            <h2 class="section-title">Who is Andy?</h2>
+            <div class="card">
+                <div class="photo-container">
+                    <img src="Andy.png" alt="Andy's Photo">
+                </div>
+                <p class="section-text">A passionate developer exploring the frontiers of technology. Creating immersive experiences that bridge the gap between the digital and physical worlds.</p>
+                <p class="section-text">A creative designer shaping the future of interactive experiences.</p>
+            </div>
+        </div>
+    </div>
+
+    <canvas id="vortexCanvas"></canvas>
+    
+
+    <div class="scroll-indicator">SCROLL TO EXPLORE</div>
+
+    <script>
+        // 设置标题文字的电磁化效果
+        const mainTitle = document.getElementById('mainTitle');
+        const subTitle = document.getElementById('subTitle');
+        
+        // 处理主标题
+        const mainText = mainTitle.innerHTML;  // 使用 innerHTML 而不是 textContent
+        let mainSplitText = '';
+        let inTag = false;
+        let currentTag = '';
+        
+        for (let i = 0; i < mainText.length; i++) {
+            if (mainText[i] === '<') {
+                inTag = true;
+                currentTag = '';
+            }
+            
+            if (inTag) {
+                currentTag += mainText[i];
+                if (mainText[i] === '>') {
+                    inTag = false;
+                    mainSplitText += currentTag;
+                }
+            } else {
+                if (mainText[i] === ' ') {
+                    mainSplitText += ' ';  // 保留空格
+                } else {
+                    mainSplitText += `<span>${mainText[i]}</span>`;
+                }
+            }
+        }
+        
+        mainTitle.innerHTML = mainSplitText;
+        const mainSpans = mainTitle.querySelectorAll('span');
+        
+        // 处理副标题
+        const subText = subTitle.textContent;
+        let subSplitText = '';
+        for (let i = 0; i < subText.length; i++) {
+            if (subText[i] === ' ') {
+                subSplitText += ' ';  // 保留空格
+            } else {
+                subSplitText += `<span>${subText[i]}</span>`;
+            }
+        }
+        subTitle.innerHTML = subSplitText;
+        const subSpans = subTitle.querySelectorAll('span');
+        
+        // 主标题悬停效果
+        mainTitle.addEventListener('mouseover', (e) => {
+            // 只有当鼠标悬停在非链接元素上时才触发效果
+            if (!e.target.closest('a')) {
+                mainSpans.forEach(span => {
+                    span.classList.add('glitch-effect');
+                    const randomX = (Math.random() - 0.5) * 20;
+                    const randomY = (Math.random() - 0.5) * 20;
+                    const randomRotate = (Math.random() - 0.5) * 30;
+                    const randomScale = 0.8 + Math.random() * 0.5;
+                    span.style.transform = `translate(${randomX}px, ${randomY}px) rotate(${randomRotate}deg) scale(${randomScale})`;
+                });
+            }
+        });
+        
+        mainTitle.addEventListener('mouseout', (e) => {
+            // 只有当鼠标离开非链接元素时才移除效果
+            if (!e.target.closest('a')) {
+                mainSpans.forEach(span => {
+                    span.classList.remove('glitch-effect');
+                    span.style.transform = 'translate(0) rotate(0) scale(1)';
+                });
+            }
+        });
+
+        // 副标题悬停效果
+        subTitle.addEventListener('mouseover', () => {
+            subSpans.forEach(span => {
+                span.classList.add('glitch-effect');
+                const randomX = (Math.random() - 0.5) * 10;
+                const randomY = (Math.random() - 0.5) * 10;
+                const randomRotate = (Math.random() - 0.5) * 15;
+                const randomScale = 0.9 + Math.random() * 0.3;
+                span.style.transform = `translate(${randomX}px, ${randomY}px) rotate(${randomRotate}deg) scale(${randomScale})`;
+            });
+        });
+        
+        subTitle.addEventListener('mouseout', () => {
+            subSpans.forEach(span => {
+                span.classList.remove('glitch-effect');
+                span.style.transform = 'translate(0) rotate(0) scale(1)';
+            });
+        });
+
+        // 磁场背景效果
+        const canvas = document.getElementById('magneticField');
+        const ctx = canvas.getContext('2d');
+        
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        
+        let particles = [];
+        const particleCount = 100;
+        let mouseX = canvas.width / 2;
+        let mouseY = canvas.height / 2;
+        let magneticPower = 0;
+        
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 2 + 1;
+                this.baseX = this.x;
+                this.baseY = this.y;
+                this.density = (Math.random() * 20) + 1;
+                this.color = `hsl(${180 + Math.random() * 60}, 100%, 50%)`;
+                this.velocity = {
+                    x: (Math.random() - 0.5) * 0.5,
+                    y: (Math.random() - 0.5) * 0.5
+                };
+            }
+            
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fillStyle = this.color;
+                ctx.fill();
+                
+                // 粒子之间的连线
+                for (let i = 0; i < particles.length; i++) {
+                    const dx = this.x - particles[i].x;
+                    const dy = this.y - particles[i].y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    
+                    if (distance < 100) {
+                        ctx.beginPath();
+                        ctx.strokeStyle = `rgba(0, 255, 238, ${1 - distance/100})`;
+                        ctx.lineWidth = 0.2;
+                        ctx.moveTo(this.x, this.y);
+                        ctx.lineTo(particles[i].x, particles[i].y);
+                        ctx.stroke();
+                    }
+                }
+            }
+            
+            update() {
+                // 计算粒子与鼠标之间的距离
+                const dx = mouseX - this.x;
+                const dy = mouseY - this.y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                
+                // 磁场效应
+                if (distance < 200) {
+                    const forceDirectionX = dx / distance;
+                    const forceDirectionY = dy / distance;
+                    const force = (200 - distance) / 200;
+                    
+                    const directionX = forceDirectionX * force * this.density * magneticPower;
+                    const directionY = forceDirectionY * force * this.density * magneticPower;
+                    
+                    this.x += directionX;
+                    this.y += directionY;
+                } else {
+                    // 粒子回到原位的逻辑
+                    if (this.x !== this.baseX) {
+                        const dx = this.x - this.baseX;
+                        this.x -= dx/20;
+                    }
+                    if (this.y !== this.baseY) {
+                        const dy = this.y - this.baseY;
+                        this.y -= dy/20;
+                    }
+                }
+                
+                // 添加一些随机运动
+                this.x += this.velocity.x;
+                this.y += this.velocity.y;
+                
+                // 边界检查
+                if (this.x < 0 || this.x > canvas.width) {
+                    this.velocity.x *= -1;
+                }
+                if (this.y < 0 || this.y > canvas.height) {
+                    this.velocity.y *= -1;
+                }
+            }
+        }
+        
+        function init() {
+            particles = [];
+            for (let i = 0; i < particleCount; i++) {
+                particles.push(new Particle());
+            }
+        }
+        
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            for (let i = 0; i < particles.length; i++) {
+                particles[i].update();
+                particles[i].draw();
+            }
+            
+            requestAnimationFrame(animate);
+        }
+        
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            init();
+        });
+        
+        window.addEventListener('mousemove', (e) => {
+            mouseX = e.x;
+            mouseY = e.y;
+            magneticPower = 1;
+        });
+        
+        window.addEventListener('mouseout', () => {
+            magneticPower = 0;
+        });
+        
+        init();
+        animate();
+
+        // Matrix Rain Effect
+        const matrixCanvas = document.getElementById('matrixRain');
+        const matrixCtx = matrixCanvas.getContext('2d');
+        
+        matrixCanvas.width = window.innerWidth;
+        matrixCanvas.height = window.innerHeight;
+        
+        const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789$#@%&*(){}[]<>~`|\\';
+        const fontSize = 14;
+        const columns = matrixCanvas.width / fontSize;
+        
+        const drops = [];
+        for (let i = 0; i < columns; i++) {
+            drops[i] = 1;
+        }
+        
+        function drawMatrixRain() {
+            matrixCtx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+            matrixCtx.fillRect(0, 0, matrixCanvas.width, matrixCanvas.height);
+            
+            matrixCtx.fillStyle = '#0fe';
+            matrixCtx.font = `${fontSize}px monospace`;
+            
+            for (let i = 0; i < drops.length; i++) {
+                const text = characters.charAt(Math.floor(Math.random() * characters.length));
+                matrixCtx.fillText(text, i * fontSize, drops[i] * fontSize);
+                
+                if (drops[i] * fontSize > matrixCanvas.height && Math.random() > 0.975) {
+                    drops[i] = 0;
+                }
+                
+                drops[i]++;
+            }
+        }
+        
+        window.addEventListener('resize', () => {
+            matrixCanvas.width = window.innerWidth;
+            matrixCanvas.height = window.innerHeight;
+        });
+        
+        setInterval(drawMatrixRain, 50);
+
+        // 滚动效果
+        window.addEventListener('scroll', () => {
+            const scrollY = window.scrollY;
+            const scrollIndicator = document.querySelector('.scroll-indicator');
+            
+            // 根据滚动位置调整磁场强度
+            magneticPower = 0.5 + (scrollY / (document.body.scrollHeight - window.innerHeight)) * 2;
+            
+            // 隐藏滚动提示
+            if (scrollY > 100) {
+                scrollIndicator.style.opacity = '0';
+            } else {
+                scrollIndicator.style.opacity = '0.7';
+            }
+        });
+
+        // 图片轮播功能
+        const imageCarousel = document.getElementById('imageCarousel');
+        const images = imageCarousel.querySelectorAll('img');
+        let currentIndex = 0;
+
+        function showNextImage() {
+            images[currentIndex].classList.remove('active');
+            currentIndex = (currentIndex + 1) % images.length;
+            images[currentIndex].classList.add('active');
+        }
+
+        imageCarousel.addEventListener('click', showNextImage);
+
+        // 自动轮播（可选，每10秒切换一次）
+        setInterval(showNextImage, 10000);
+
+        // 黑洞漩涡效果
+        const vortexCanvas = document.getElementById('vortexCanvas');
+        const vortexCtx = vortexCanvas.getContext('2d');
+        
+        // 设置画布大小
+        function resizeVortexCanvas() {
+            vortexCanvas.width = 300;  // 减小画布大小
+            vortexCanvas.height = 300;
+        }
+        resizeVortexCanvas();
+
+        // 预加载图片
+        const centerImage = new Image();
+        centerImage.src = 'photo.png';
+
+        // 添加点击事件
+        vortexCanvas.addEventListener('click', () => {
+            window.location.href = 'https://andyyyuu.github.io/album/';
+        });
+
+        class VortexLine {
+            constructor() {
+                this.reset();
+            }
+
+            reset() {
+                this.angle = Math.random() * Math.PI * 2;
+                this.radius = 200;  // 调整初始半径以适应新的画布大小
+                this.speed = 0.015;
+                this.lineWidth = 2;
+                this.opacity = 0.7;
+                this.color = `rgba(0, 255, 238, ${this.opacity})`;
+                this.points = [];
+                this.maxPoints = 60;
+                this.isVortexing = false;
+                this.targetRadius = 200;  // 调整目标半径
+            }
+
+            update(vortexMouseX, vortexMouseY, isCenter) {
+                const centerX = vortexCanvas.width / 2;
+                const centerY = vortexCanvas.height / 2;
+                const dx = vortexMouseX - centerX;
+                const dy = vortexMouseY - centerY;
+                const distanceToMouse = Math.sqrt(dx * dx + dy * dy);
+                
+                let speedMultiplier = 1;
+                if (distanceToMouse < 300) {
+                    speedMultiplier = 1 + (300 - distanceToMouse) / 300 * 2;
+                }
+
+                this.angle += this.speed * speedMultiplier;
+
+                // 如果鼠标在中心，开始漩涡效果
+                if (isCenter && !this.isVortexing) {
+                    this.isVortexing = true;
+                    this.targetRadius = 50;  // 增大最终漩涡半径到50px
+                }
+
+                // 根据状态更新半径
+                if (this.isVortexing) {
+                    // 平滑过渡到目标半径，减慢收缩速度使过渡更平滑
+                    this.radius += (this.targetRadius - this.radius) * 0.03;
+                } else {
+                    this.radius = 300;
+                }
+
+                // 计算新点
+                const x = centerX + Math.cos(this.angle) * this.radius;
+                const y = centerY + Math.sin(this.angle) * this.radius;
+
+                // 添加新点到数组
+                this.points.unshift({ x, y });
+                if (this.points.length > this.maxPoints) {
+                    this.points.pop();
+                }
+            }
+
+            draw() {
+                if (this.points.length < 2) return;
+
+                vortexCtx.beginPath();
+                vortexCtx.moveTo(this.points[0].x, this.points[0].y);
+                
+                // 绘制平滑的曲线
+                for (let i = 1; i < this.points.length; i++) {
+                    const xc = (this.points[i].x + this.points[i - 1].x) / 2;
+                    const yc = (this.points[i].y + this.points[i - 1].y) / 2;
+                    vortexCtx.quadraticCurveTo(this.points[i - 1].x, this.points[i - 1].y, xc, yc);
+                }
+
+                // 设置渐变
+                const gradient = vortexCtx.createLinearGradient(
+                    this.points[0].x, this.points[0].y,
+                    this.points[this.points.length - 1].x,
+                    this.points[this.points.length - 1].y
+                );
+                gradient.addColorStop(0, 'rgba(0, 255, 238, 0.8)');
+                gradient.addColorStop(1, 'rgba(0, 255, 238, 0)');
+
+                vortexCtx.strokeStyle = gradient;
+                vortexCtx.lineWidth = this.lineWidth;
+                vortexCtx.stroke();
+            }
+        }
+
+        // 粒子类
+        class VortexParticle {
+            constructor(x, y) {
+                this.x = x;
+                this.y = y;
+                this.size = Math.random() * 3 + 1;
+                this.speedX = (Math.random() - 0.5) * 2;
+                this.speedY = (Math.random() - 0.5) * 2;
+                this.life = 1;
+                this.element = document.createElement('div');
+                this.element.className = 'vortex-particle';
+                this.element.style.width = this.size + 'px';
+                this.element.style.height = this.size + 'px';
+                document.body.appendChild(this.element);
+            }
+
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+                this.life -= 0.02;
+                this.element.style.left = this.x + 'px';
+                this.element.style.top = this.y + 'px';
+                this.element.style.opacity = this.life;
+            }
+
+            remove() {
+                this.element.remove();
+            }
+        }
+
+        // 创建漩涡线
+        const vortexLines = [];
+        let vortexLineCount = 6;  // 保持6条线
+        const maxLines = 14;      // 最大线条数量
+        const minLines = 6;       // 最小线条数量
+        let isVortexActive = false;
+
+        function createVortexLines() {
+            vortexLines.length = 0;
+            for (let i = 0; i < vortexLineCount; i++) {
+                const line = new VortexLine();
+                line.angle = (i * Math.PI * 2) / vortexLineCount;
+                vortexLines.push(line);
+            }
+        }
+
+        // 粒子数组
+        const vortexParticles = [];
+
+        // 动画循环
+        function animateVortex() {
+            vortexCtx.clearRect(0, 0, vortexCanvas.width, vortexCanvas.height);
+
+            // 计算到鼠标的距离
+            const centerX = vortexCanvas.width / 2;
+            const centerY = vortexCanvas.height / 2;
+            const dx = vortexMouseX - centerX;
+            const dy = vortexMouseY - centerY;
+            const distanceToMouse = Math.sqrt(dx * dx + dy * dy);
+
+            // 检查是否在中心区域（30像素范围内）
+            const isCenter = distanceToMouse < 30;  // 稍微增大中心区域
+
+            // 如果到达中心且漩涡未激活，激活漩涡
+            if (isCenter && !isVortexActive) {
+                isVortexActive = true;
+            }
+
+            // 根据距离动态调整线条数量（仅在非漩涡状态下）
+            if (!isVortexActive) {
+                const targetLineCount = Math.min(
+                    maxLines,
+                    Math.max(minLines, Math.floor(6 + (300 - Math.min(300, distanceToMouse)) / 300 * 8))  // 调整影响范围
+                );
+
+                if (targetLineCount !== vortexLineCount) {
+                    vortexLineCount = targetLineCount;
+                    createVortexLines();
+                }
+            }
+
+            // 更新和绘制所有线条
+            vortexLines.forEach(line => {
+                line.update(vortexMouseX, vortexMouseY, isVortexActive);
+                line.draw();
+
+                // 在漩涡状态下生成粒子
+                if (isVortexActive && distanceToMouse < 100) {
+                    if (Math.random() < 0.3) {
+                        const angle = line.angle;
+                        const radius = line.radius;
+                        const x = centerX + Math.cos(angle) * radius;
+                        const y = centerY + Math.sin(angle) * radius;
+                        vortexParticles.push(new VortexParticle(
+                            x + vortexCanvas.getBoundingClientRect().left,
+                            y + vortexCanvas.getBoundingClientRect().top
+                        ));
+                    }
+                }
+            });
+
+            // 在中心绘制图片
+            if (centerImage.complete) {
+                const imageSize = 80;  // 稍微减小图片大小以适应新的画布
+                vortexCtx.save();
+                vortexCtx.globalAlpha = 0.9;
+                vortexCtx.drawImage(
+                    centerImage,
+                    centerX - imageSize/2,
+                    centerY - imageSize/2,
+                    imageSize,
+                    imageSize
+                );
+                vortexCtx.restore();
+            }
+
+            // 更新和移除粒子
+            for (let i = vortexParticles.length - 1; i >= 0; i--) {
+                vortexParticles[i].update();
+                if (vortexParticles[i].life <= 0) {
+                    vortexParticles[i].remove();
+                    vortexParticles.splice(i, 1);
+                }
+            }
+
+            requestAnimationFrame(animateVortex);
+        }
+
+        // 监听鼠标移动
+        let vortexMouseX = vortexCanvas.width / 2;
+        let vortexMouseY = vortexCanvas.height / 2;
+        vortexCanvas.addEventListener('mousemove', (e) => {
+            const rect = vortexCanvas.getBoundingClientRect();
+            vortexMouseX = e.clientX - rect.left;
+            vortexMouseY = e.clientY - rect.top;
+        });
+
+        // 初始化并启动动画
+        createVortexLines();
+        animateVortex();
+    </script>
+</body>
+</html>
